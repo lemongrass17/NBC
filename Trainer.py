@@ -75,10 +75,10 @@ class Trainer:
     def draw_plot(self):
         word_s = (sorted(self.spam.items(), key=operator.itemgetter(1)))[-11:-1]
         df_s = pd.DataFrame(word_s, columns=['word', 'frequency'])
+        df_s.plot(kind='bar', x='word')
         word_h = (sorted(self.ham.items(), key=operator.itemgetter(1)))[-11:-1]
         df_h = pd.DataFrame(word_h, columns=['word', 'frequency'])
-        df_s.join(df_h)
-        df_s.plot(kind='bar', x='word')
+        df_h.plot(kind='bar', x='word')
         plt.show()
 
     def calc_pos(self, string):
@@ -86,8 +86,8 @@ class Trainer:
         lmt = WordNetLemmatizer()
         spam_all = sum(self.spam.values())
         ham_all = sum(self.ham.values())
-        spam_p = 0
-        ham_p = 0
+        spam_p = 1
+        ham_p = 1
         added_s = 0
         added_h = 0
         l = 0
@@ -106,26 +106,27 @@ class Trainer:
         for key in count.keys():
             if key != '':
                 if key in self.spam:
-                    spam_p = spam_p + count[key] / self.spam[key]
+                    spam_p = (spam_p * count[key]) / self.spam[key]
                 else:
-                    spam_p = spam_p + count[key] / added_s
+                    spam_p = (spam_p * count[key]) / added_s
                 if key in self.ham:
-                    ham_p = ham_p + count[key] / self.ham[key]
+                    ham_p = (ham_p * count[key]) / self.ham[key]
                 else:
-                    ham_p = ham_p + count[key] / added_h
-        d = spam_p * (l / spam_all) + ham_p * (l / ham_all)
-        print(((spam_p * (l / spam_all)) / d) * 100)
-        print(((ham_p * (l / ham_all)) / d) * 100)
+                    ham_p = (ham_p * count[key]) / added_h
+        #d = spam_p * (l / spam_all) + ham_p * (l / ham_all)
+        #print(spam_p * (spam_all / (spam_all + ham_all)))
+        #print(ham_p * (ham_all / (spam_all + ham_all)))
+        return spam_p * (spam_all / (spam_all + ham_all)), ham_p * (ham_all / (spam_all + ham_all))
 
-def main():
-    tr = Trainer()
-    tr.write_to_files()
-    #tr.calc_pos('Hi are you dating today?')
-    lmt = WordNetLemmatizer()
-    print(lmt.lemmatize(lmt.lemmatize(tr.clear_string('n').lower()), 'v') in stopwords.words('english'))
+#def main():
+    #tr = Trainer()
+    #tr.write_to_files()
+    #print(tr.calc_pos('Hi are you dating today?'))
+    #lmt = WordNetLemmatizer()
+    #print(lmt.lemmatize(lmt.lemmatize(tr.clear_string('n').lower()), 'v') in stopwords.words('english'))
     #tr.draw_plot()
-    return
+    #return
 
-# TRY TO CHANGE DICT, DO PLOTS AND UI
-if __name__ == "__main__":
-    main()
+# TRY TO CHANGE DICT, DO PLOTS
+#if __name__ == "__main__":
+    #main()
