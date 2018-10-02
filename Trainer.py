@@ -44,13 +44,13 @@ class Trainer:
                         if w in self.spam:
                             self.spam[w] = self.spam.get(w) + 1
                         else:
-                            if w in woc.words():
+                            if (w in woc.words()) and ((len(w) > 2) or (w == 'go')):
                                 self.spam[w] = 1
                     elif words[-1] == 'ham':
                         if w in self.ham:
                             self.ham[w] = self.ham.get(w) + 1
                         else:
-                            if w in woc.words():
+                            if w in woc.words() and ((len(w) > 2) or (w == 'go')):
                                 self.ham[w] = 1
         file_set.close()
 
@@ -75,10 +75,10 @@ class Trainer:
     def draw_plot(self):
         word_s = (sorted(self.spam.items(), key=operator.itemgetter(1)))[-11:-1]
         df_s = pd.DataFrame(word_s, columns=['word', 'frequency'])
-        df_s.plot(kind='bar', x='word')
+        df_s.plot(kind='bar', x='word', title='spam')
         word_h = (sorted(self.ham.items(), key=operator.itemgetter(1)))[-11:-1]
         df_h = pd.DataFrame(word_h, columns=['word', 'frequency'])
-        df_h.plot(kind='bar', x='word')
+        df_h.plot(kind='bar', x='word', title='ham')
         plt.show()
 
     def calc_pos(self, string):
@@ -106,27 +106,31 @@ class Trainer:
         for key in count.keys():
             if key != '':
                 if key in self.spam:
-                    spam_p = (spam_p * count[key]) / self.spam[key]
+                    #spam_p = spam_p * (count[key] / self.spam[key])
+                    spam_p = spam_p * (self.spam[key] / spam_all)
                 else:
-                    spam_p = (spam_p * count[key]) / added_s
+                    spam_p = spam_p * (count[key] / added_s)
                 if key in self.ham:
-                    ham_p = (ham_p * count[key]) / self.ham[key]
+                    #ham_p = ham_p * (count[key] / self.ham[key])
+                    ham_p = ham_p * (self.ham[key] / ham_all)
                 else:
-                    ham_p = (ham_p * count[key]) / added_h
+                    ham_p = ham_p * (count[key] / added_h)
         #d = spam_p * (l / spam_all) + ham_p * (l / ham_all)
         #print(spam_p * (spam_all / (spam_all + ham_all)))
         #print(ham_p * (ham_all / (spam_all + ham_all)))
         return spam_p * (spam_all / (spam_all + ham_all)), ham_p * (ham_all / (spam_all + ham_all))
 
 #def main():
+    #print('go' in woc.words())
     #tr = Trainer()
+    #word = tr.opFile()
+    #print(word)
     #tr.write_to_files()
     #print(tr.calc_pos('Hi are you dating today?'))
     #lmt = WordNetLemmatizer()
-    #print(lmt.lemmatize(lmt.lemmatize(tr.clear_string('n').lower()), 'v') in stopwords.words('english'))
+    #print(lmt.lemmatize(lmt.lemmatize(tr.clear_string('g').lower()), 'v') in stopwords.words('english'))
     #tr.draw_plot()
     #return
 
-# TRY TO CHANGE DICT, DO PLOTS
 #if __name__ == "__main__":
     #main()
