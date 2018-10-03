@@ -107,17 +107,17 @@ class Trainer:
             if key != '':
                 if key in self.spam:
                     #spam_p = spam_p * (count[key] / self.spam[key])
-                    spam_p = spam_p * (self.spam[key] / spam_all)
+                    spam_p = spam_p * (self.spam[key] / (spam_all + added_s))
                 else:
-                    spam_p = spam_p * (count[key] / added_s)
+                    spam_p = spam_p * (count[key] / (added_s + spam_all))
                 if key in self.ham:
                     #ham_p = ham_p * (count[key] / self.ham[key])
-                    ham_p = ham_p * (self.ham[key] / ham_all)
+                    ham_p = ham_p * (self.ham[key] / (ham_all + added_h))
                 else:
-                    ham_p = ham_p * (count[key] / added_h)
+                    ham_p = ham_p * (count[key] / (added_h + ham_all))
         #d = spam_p * (l / spam_all) + ham_p * (l / ham_all)
-        #print(spam_p * (spam_all / (spam_all + ham_all)))
-        #print(ham_p * (ham_all / (spam_all + ham_all)))
+        print(spam_p * (spam_all / (spam_all + ham_all)))
+        print(ham_p * (ham_all / (spam_all + ham_all)))
         return spam_p * (spam_all / (spam_all + ham_all)), ham_p * (ham_all / (spam_all + ham_all))
 
 #def main():
